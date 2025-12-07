@@ -12,12 +12,12 @@ const openDB = async (): Promise<SQLite.SQLiteDatabase> => {
   return db;
 };
 
-//Initialize database tables and seed sample data - Called once when app starts
+// Initialize database tables and seed sample data - Called once when app starts
 export const initDatabase = async (): Promise<void> => {
   try {
     const database = await openDB();
 
-    // #region Create Listings
+    // #region Create listings table
     // This stores all sitting job postings
     await database.execAsync(`
       CREATE TABLE IF NOT EXISTS listings (
@@ -57,10 +57,10 @@ export const initDatabase = async (): Promise<void> => {
     if (result && result.count === 0) {
       await seedSampleData(database);
     } else {
-      console.log("📊 Database already has data");
+      console.log("Database already has data");
     }
   } catch (error) {
-    console.error("❌ Database initialization error:", error);
+    console.error("Database initialization error:", error);
     throw error;
   }
 };
@@ -139,7 +139,6 @@ const seedSampleData = async (
       ]
     );
   }
-
   console.log("✅ Seeded 5 sample listings");
 };
 
