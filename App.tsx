@@ -2,36 +2,37 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 import { initDatabase } from './src/database/db';
+import { AppNavigator } from './src/navigation/AppNavigator';
 
+// #region App Component
 export default function App() {
     const [dbReady, setDbReady] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Check if we're running on a platform that supports SQLite
+        // Platform check: SQLite only works on iOS/Android
         if (Platform.OS === 'web') {
-            // Web doesn't support SQLite - show message instead
             setError('web_not_supported');
             return;
         }
 
-        // Initialize database for iOS/Android
+        // Initialize database
         const setup = async () => {
             try {
-                console.log('🚀 Starting database initialization...');
+                console.log('Starting app initialization...');
                 await initDatabase();
-                console.log('✅ Database initialization complete');
+                console.log('App initialization complete');
                 setDbReady(true);
             } catch (err) {
-                console.error('❌ Setup error:', err);
+                console.error('Setup error:', err);
                 setError(err instanceof Error ? err.message : 'Unknown error');
             }
         };
 
         setup();
-    }, []); // Empty dependency array = run once when component mounts
+    }, []);
 
-    // Special handling for web platform
+    // #region Web Platform Msg
     if (error === 'web_not_supported') {
         return (
             <View style={styles.container}>
@@ -52,42 +53,46 @@ export default function App() {
             </View>
         );
     }
+    // #endregion Web Platform Msg
 
-    // Handle other errors
+    // #region Other errors
     if (error) {
         return (
             <View style={styles.container}>
                 <StatusBar style="auto" />
-                <Text style={styles.error}>❌ Error</Text>
+                <Text style={styles.error}>Error</Text>
                 <Text style={styles.errorText}>{error}</Text>
                 <Text style={styles.hint}>Try restarting the app</Text>
             </View>
         );
     }
+    // #endregion Other errors
 
-    // Show loading spinner while database initializes
+    // #region Loading state
     if (!dbReady) {
         return (
             <View style={styles.container}>
                 <StatusBar style="auto" />
                 <ActivityIndicator size="large" color="#2196F3" />
-                <Text style={styles.loadingText}>Initializing database...</Text>
-                <Text style={styles.hint}>This should only take a moment</Text>
+                <Text style={styles.loadingText}>Initializing SitConnect...</Text>
+                <Text style={styles.hint}>Setting up database</Text>
             </View>
         );
     }
+    // #endregion Loading state
 
-    // Success! Database is ready
+    // #region Show Actual App
+    console.log('RENDERING APPNAVIGATOR NOW');
     return (
-        <View style={styles.container}>
+        <>
             <StatusBar style="auto" />
-            <Text style={styles.success}>✅ Database Ready!</Text>
-            <Text style={styles.text}>Check the console for initialization logs</Text>
-            <Text style={styles.hint}>Platform: {Platform.OS}</Text>
-        </View>
+            <AppNavigator />
+        </>
     );
+    // #endregion Show Actual App
 }
 
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -95,12 +100,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
-    },
-    success: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#4CAF50',
-        marginBottom: 10,
     },
     error: {
         fontSize: 24,
@@ -112,12 +111,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         marginBottom: 10,
-        textAlign: 'center',
-    },
-    text: {
-        fontSize: 16,
-        color: '#666',
-        marginTop: 10,
         textAlign: 'center',
     },
     loadingText: {
@@ -161,3 +154,4 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
 });
+// #endregion Styles
