@@ -7,7 +7,7 @@ import { Listing, SitterType } from "../types";
 
 //Create a new listing - @returns The ID of the newly created listing
 export const createListing = async (
-  creatorRoleId: number,
+  creatorUserId: number,
   sitterType: SitterType,
   location: string,
   startDate: string,
@@ -22,7 +22,7 @@ export const createListing = async (
       `INSERT INTO listings (creatorRoleId, sitterType, location, startDate, endDate, description, createdAt)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
-        creatorRoleId,
+        creatorUserId,
         sitterType,
         location,
         startDate,
@@ -32,10 +32,10 @@ export const createListing = async (
       ]
     );
 
-    console.log("✅ Created listing with ID:", result.lastInsertRowId);
+    console.log("Created listing with ID:", result.lastInsertRowId);
     return result.lastInsertRowId;
   } catch (error) {
-    console.error("❌ Error creating listing:", error);
+    console.error("Error creating listing:", error);
     throw error;
   }
 };
@@ -57,29 +57,29 @@ export const getAllListings = async (): Promise<Listing[]> => {
     console.log(`📋 Fetched ${listings.length} listings`);
     return listings;
   } catch (error) {
-    console.error("❌ Error fetching listings:", error);
+    console.error("Error fetching listings:", error);
     throw error;
   }
 };
 
 // Get listings created by a specific user (for "My Listings" screen)
 export const getListingsByCreator = async (
-  creatorRoleId: number
+  creatorUserId: number
 ): Promise<Listing[]> => {
   try {
     const db = await getDatabase();
 
     const listings = await db.getAllAsync<Listing>(
-      "SELECT * FROM listings WHERE creatorRoleId = ? ORDER BY createdAt DESC",
-      [creatorRoleId]
+      "SELECT * FROM listings WHERE creatorUserId = ? ORDER BY createdAt DESC",
+      [creatorUserId]
     );
 
     console.log(
-      `📋 Fetched ${listings.length} listings for creator ${creatorRoleId}`
+      `Fetched ${listings.length} listings for creator ${creatorUserId}`
     );
     return listings;
   } catch (error) {
-    console.error("❌ Error fetching listings by creator:", error);
+    console.error("Error fetching listings by creator:", error);
     throw error;
   }
 };
@@ -97,7 +97,7 @@ export const getListingById = async (id: number): Promise<Listing | null> => {
 
     return listing || null;
   } catch (error) {
-    console.error("❌ Error fetching listing by ID:", error);
+    console.error("Error fetching listing by ID:", error);
     throw error;
   }
 };
@@ -124,11 +124,11 @@ export const filterListingsByType = async (
     );
 
     console.log(
-      `🔍 Filtered to ${listings.length} listings for type: ${sitterType}`
+      `Filtered to ${listings.length} listings for type: ${sitterType}`
     );
     return listings;
   } catch (error) {
-    console.error("❌ Error filtering listings:", error);
+    console.error("Error filtering listings:", error);
     throw error;
   }
 };
@@ -156,9 +156,9 @@ export const updateListing = async (
       [sitterType, location, startDate, endDate, description, id]
     );
 
-    console.log("✅ Updated listing:", id);
+    console.log("Updated listing:", id);
   } catch (error) {
-    console.error("❌ Error updating listing:", error);
+    console.error("Error updating listing:", error);
     throw error;
   }
 };
@@ -174,9 +174,9 @@ export const deleteListing = async (id: number): Promise<void> => {
 
     await db.runAsync("DELETE FROM listings WHERE id = ?", [id]);
 
-    console.log("🗑️ Deleted listing:", id);
+    console.log("Deleted listing:", id);
   } catch (error) {
-    console.error("❌ Error deleting listing:", error);
+    console.error("Error deleting listing:", error);
     throw error;
   }
 };
@@ -200,7 +200,7 @@ export const saveListingForSitter = async (
     );
 
     if (existing) {
-      console.log("ℹ️ Listing already saved");
+      console.log("Listing already saved");
       return;
     }
 
@@ -210,9 +210,9 @@ export const saveListingForSitter = async (
       [listingId, sitterRoleId, new Date().toISOString()]
     );
 
-    console.log("❤️ Saved listing:", listingId);
+    console.log("Saved listing:", listingId);
   } catch (error) {
-    console.error("❌ Error saving listing:", error);
+    console.error("Error saving listing:", error);
     throw error;
   }
 };
@@ -230,9 +230,9 @@ export const unsaveListingForSitter = async (
       [listingId, sitterRoleId]
     );
 
-    console.log("💔 Unsaved listing:", listingId);
+    console.log("Unsaved listing:", listingId);
   } catch (error) {
-    console.error("❌ Error unsaving listing:", error);
+    console.error("Error unsaving listing:", error);
     throw error;
   }
 };
@@ -252,7 +252,7 @@ export const isListingSaved = async (
 
     return result !== null;
   } catch (error) {
-    console.error("❌ Error checking if listing is saved:", error);
+    console.error("Error checking if listing is saved:", error);
     throw error;
   }
 };
@@ -274,10 +274,10 @@ export const getSavedListingsForSitter = async (
       [sitterRoleId]
     );
 
-    console.log(`❤️ Fetched ${listings.length} saved listings`);
+    console.log(`Fetched ${listings.length} saved listings`);
     return listings;
   } catch (error) {
-    console.error("❌ Error fetching saved listings:", error);
+    console.error("Error fetching saved listings:", error);
     throw error;
   }
 };

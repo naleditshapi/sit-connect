@@ -37,4 +37,18 @@ export type RootStackParamList = {
   ListingDetails: { listingId: number };
   SavedListings: undefined;
   SitterHome: undefined;
+  Landing: undefined;
+  Login: undefined;
+  SignUp: undefined;
 };
+
+export interface User {
+  id: number;
+  name: string;
+  surname: string;
+  role: "requester" | "sitter";
+  email: string;
+  username: string;
+  password: string;
+  profileImage?: string | null;
+}
