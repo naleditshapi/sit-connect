@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SitterType } from '../types';
 
-//Props for FilterBar
+// Props for FilterBar
 interface FilterBarProps {
     selectedFilter: SitterType | 'all';
     onFilterChange: (filter: SitterType | 'all') => void;
@@ -14,12 +14,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     selectedFilter,
     onFilterChange,
 }) => {
-    //Available filter options
-    const filters: Array<{ value: SitterType | 'all'; label: string; emoji: string }> = [
-        { value: 'all', label: 'All', emoji: '📋' },
-        { value: SitterType.PET, label: 'Pet Sitting', emoji: '🐾' },
-        { value: SitterType.HOUSE, label: 'House Sitting', emoji: '🏠' },
-        { value: SitterType.BOTH, label: 'Both', emoji: '🏠🐾' },
+    // #region Filter Options
+    const filters: Array<{ value: SitterType | 'all'; label: string }> = [
+        { value: 'all', label: 'All' },
+        { value: SitterType.PET, label: 'Pet Sitting' },
+        { value: SitterType.HOUSE, label: 'House Sitting' },
+        { value: SitterType.BOTH, label: 'Both' },
     ];
 
     return (
@@ -41,7 +41,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                             ]}
                             onPress={() => onFilterChange(filter.value)}
                         >
-                            <Text style={styles.emoji}>{filter.emoji}</Text>
                             <Text
                                 style={[
                                     styles.filterText,
@@ -85,9 +84,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#2196F3',
         borderColor: '#2196F3',
     },
-    emoji: {
-        fontSize: 16,
-    },
     filterText: {
         fontSize: 14,
         color: '#666',
@@ -97,5 +93,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: '600',
     },
+    // #endregion Styles
 });
-// #endregion Styles
+// #endregion FilterBar Comp

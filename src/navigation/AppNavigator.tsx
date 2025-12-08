@@ -7,6 +7,7 @@ import { RootStackParamList } from '../types';
 // Import screens
 import { BrowseListingsScreen } from '../screens/BrowseListingsScreen';
 import { CreateListingScreen } from '../screens/CreateListingScreen';
+import { EditListingScreen } from '../screens/EditListingScreen';
 import { ListingDetailsScreen } from '../screens/ListingDetailsScreen';
 import { MyListingsScreen } from '../screens/MyListingsScreen';
 import { RoleSelectionScreen } from '../screens/RoleSelectionScreen';
@@ -15,7 +16,7 @@ import { SavedListingsScreen } from '../screens/SavedListingsScreen';
 // Create the stack navigator with our type definitions
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-// #region AppNav Comp
+// AppNavigator component
 export const AppNavigator: React.FC = () => {
     return (
         <NavigationContainer>
@@ -64,6 +65,15 @@ export const AppNavigator: React.FC = () => {
                     name="CreateListing"
                     component={CreateListingScreen}
                     options={{ title: 'Create Listing' }}
+                />
+
+                <Stack.Screen
+                    name="EditListing"
+                    component={EditListingScreen}
+                    options={{
+                        title: 'Edit Listing',
+                        headerBackTitle: 'Back',
+                    }}
                 />
 
                 {/* Sitter Flow */}

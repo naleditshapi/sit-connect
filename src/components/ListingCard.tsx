@@ -17,7 +17,7 @@ interface ListingCardProps {
 export const ListingCard: React.FC<ListingCardProps> = ({
     listing,
     onPress,
-    showActions = false,  // Default to false if not provided
+    showActions = false,
     onEdit,
     onDelete,
 }) => {
@@ -64,7 +64,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         <TouchableOpacity
             style={styles.card}
             onPress={onPress}
-            activeOpacity={0.7} // Visual feedback on press
+            activeOpacity={0.5}
         >
             {/* Header with type badge */}
             <View style={styles.header}>
@@ -83,14 +83,12 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             {/* Location */}
             <Text style={styles.location} numberOfLines={1}>
                 <Ionicons name="location-outline" size={20} color="#555" />
-                <Ionicons name="location-sharp" size={20} color="#555" />
                 {listing.location}
             </Text>
 
             {/* Dates */}
             <Text style={styles.dates}>
                 <Ionicons name="calendar-outline" size={20} color="#555" />
-                <Ionicons name="calendar" size={20} color="#555" />
                 {formatDate(listing.startDate)} - {formatDate(listing.endDate)}
             </Text>
 

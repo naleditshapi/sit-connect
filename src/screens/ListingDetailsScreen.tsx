@@ -305,13 +305,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-/**
- * Key Concepts:
- * 
- * 1. Route Params: Access passed data via route.params
- * 2. Multiple States: loading, listing, isSaved, savingInProgress
- * 3. Early Returns: Handle loading/error states before main render
- * 4. Toggle Logic: Switch between two states (saved/unsaved)
- * 5. Disabled State: Prevent multiple clicks while processing
- */ 

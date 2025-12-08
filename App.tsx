@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { initDatabase } from './src/database/db';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
@@ -10,7 +10,6 @@ export default function App() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Platform check: SQLite only works on iOS/Android
         if (Platform.OS === 'web') {
             setError('web_not_supported');
             return;
@@ -60,9 +59,38 @@ export default function App() {
         return (
             <View style={styles.container}>
                 <StatusBar style="auto" />
-                <Text style={styles.error}>Error</Text>
-                <Text style={styles.errorText}>{error}</Text>
-                <Text style={styles.hint}>Try restarting the app</Text>
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
+                    <Text style={styles.errorMessage}>{error}</Text>
+
+                    <View style={styles.errorDetailsBox}>
+                        <Text style={styles.errorDetailsTitle}>What happened?</Text>
+                        <Text style={styles.errorDetailsText}>
+                            The app encountered an error while initializing the database.
+                            This usually happens due to storage permissions or corrupted data.
+                        </Text>
+                    </View>
+
+                    <View style={styles.errorDetailsBox}>
+                        <Text style={styles.errorDetailsTitle}>How to fix it:</Text>
+                        <Text style={styles.errorDetailsText}>
+                            1. Close and restart the app{'\n'}
+                            2. If problem persists, delete the app and reinstall{'\n'}
+                            3. Make sure you have enough storage space{'\n'}
+                            4. Contact support if issue continues
+                        </Text>
+                    </View>
+
+                    <TouchableOpacity
+                        style={styles.retryButton}
+                        onPress={() => {
+                            setError(null);
+                            setDbReady(false);
+                        }}
+                    >
+                        <Text style={styles.retryButtonText}>🔄 Try Again</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -153,5 +181,59 @@ const styles = StyleSheet.create({
         color: '#333',
         marginBottom: 8,
     },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    errorTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#f44336',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    errorMessage: {
+        fontSize: 16,
+        color: '#d32f2f',
+        marginBottom: 20,
+        textAlign: 'center',
+        fontWeight: '600',
+    },
+    errorDetailsBox: {
+        backgroundColor: '#ffebee',
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 15,
+        borderLeftWidth: 4,
+        borderLeftColor: '#f44336',
+    },
+    errorDetailsTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#c62828',
+        marginBottom: 8,
+    },
+    errorDetailsText: {
+        fontSize: 14,
+        color: '#666',
+        lineHeight: 20,
+    },
+    retryButton: {
+        backgroundColor: '#2196F3',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+        marginTop: 10,
+    },
+    retryButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    // #endregion Styles
+
 });
-// #endregion Styles
+// #endregion App Component

@@ -1,150 +1,133 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RootStackParamList } from '../types';
+import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useCallback, useState } from 'react';
+import {
+    FlatList,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native';
+import { ListingCard } from '../components/ListingCard';
+import { getSavedListingsForSitter } from '../services/listingService';
+import { Listing, RootStackParamList } from '../types';
 
-// Import screens
-import { BrowseListingsScreen } from '../screens/BrowseListingsScreen';
-import { CreateListingScreen } from '../screens/CreateListingScreen';
-import { ListingDetailsScreen } from '../screens/ListingDetailsScreen';
-import { MyListingsScreen } from '../screens/MyListingsScreen';
-import { RoleSelectionScreen } from '../screens/RoleSelectionScreen';
+const MOCK_SITTER_ROLE_ID = 2;
 
-/**
- * Navigation Setup
- * 
- * Think of this like a map of your app:
- * - Each screen is a location
- * - Navigation takes you between locations
- * - Stack = screens pile on top of each other (can go back)
- */
+type SavedListingsScreenProps = {
+    navigation: NativeStackNavigationProp<RootStackParamList, 'SavedListings'>;
+};
 
-// Create the stack navigator with our type definitions
-const Stack = createNativeStackNavigator<RootStackParamList>();
+//Shows all listings that the sitter has bookmarked
+export const SavedListingsScreen: React.FC<SavedListingsScreenProps> = ({ navigation }) => {
+    const [listings, setListings] = useState<Listing[]>([]);
+    const [loading, setLoading] = useState(true);
 
-/**
- * AppNavigator component
- * This wraps your entire app and handles all routing
- */
-export const AppNavigator: React.FC = () => {
+    // #region Load Saved Listing
+    const loadSavedListings = async () => {
+        setLoading(true);
+        try {
+            const data = await getSavedListingsForSitter(MOCK_SITTER_ROLE_ID);
+            setListings(data);
+            console.log(`❤️ Loaded ${data.length} saved listings`);
+        } catch (error) {
+            console.error('Error loading saved listings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Reload when screen comes into focus
+    useFocusEffect(
+        useCallback(() => {
+            console.log('🔄 Saved listings screen focused');
+            loadSavedListings();
+        }, [])
+    );
+
+    // #region Render Saved Listing
+    const renderItem = ({ item }: { item: Listing }) => (
+        <ListingCard
+            listing={item}
+            onPress={() => {
+                console.log('Opening saved listing details:', item.id);
+                navigation.navigate('ListingDetails', { listingId: item.id });
+            }}
+            showActions={false}
+        />
+    );
+
     return (
-        <NavigationContainer>
-            <Stack.Navigator
-                initialRouteName="RoleSelection"
-                screenOptions={{
-                    // Default styling for all screens
-                    headerStyle: {
-                        backgroundColor: '#fff',
-                    },
-                    headerTintColor: '#333',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
-                    // Animation between screens
-                    animation: 'slide_from_right',
-                }}
-            >
-                {/* Role Selection Screen - Entry point */}
-                <Stack.Screen
-                    name="RoleSelection"
-                    component={RoleSelectionScreen}
-                    options={{
-                        headerShown: false, // Hide header for splash-like screen
-                    }}
-                />
+        <SafeAreaView style={styles.container}>
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={styles.title}>Saved Listings</Text>
+            </View>
 
-                {/* Requester Flow */}
-                <Stack.Screen
-                    name="RequesterHome"
-                    component={MyListingsScreen}
-                    options={({ navigation }) => ({
-                        title: 'My Listings',
-                        headerLeft: () => (
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('RoleSelection')}
-                                style={{ marginLeft: 8 }}
-                            >
-                                <Text style={{ color: '#2196F3', fontSize: 16 }}>← Back</Text>
-                            </TouchableOpacity>
-                        ),
-                    })}
+            {/* Content */}
+            {loading ? (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>Loading...</Text>
+                </View>
+            ) : listings.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyEmoji}>❤️</Text>
+                    <Text style={styles.emptyText}>No saved listings yet</Text>
+                    <Text style={styles.emptySubtext}>
+                        Browse listings and save the ones you're interested in
+                    </Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={listings}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={styles.listContainer}
                 />
-
-                <Stack.Screen
-                    name="CreateListing"
-                    component={CreateListingScreen}
-                    options={{ title: 'Create Listing' }}
-                />
-
-                {/* Sitter Flow */}
-                <Stack.Screen
-                    name="SitterHome"
-                    component={BrowseListingsScreen}
-                    options={({ navigation }) => ({
-                        title: 'Browse Listings',
-                        headerLeft: () => (
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('RoleSelection')}
-                                style={{ marginLeft: 8 }}
-                            >
-                                <Text style={{ color: '#2196F3', fontSize: 16 }}>← Back</Text>
-                            </TouchableOpacity>
-                        ),
-                    })}
-                />
-
-                <Stack.Screen
-                    name="BrowseListings"
-                    component={BrowseListingsScreen}
-                    options={{ title: 'Browse Listings' }}
-                />
-
-                <Stack.Screen
-                    name="ListingDetails"
-                    component={ListingDetailsScreen}
-                    options={{ title: 'Listing Details' }}
-                />
-
-                <Stack.Screen
-                    name="SavedListings"
-                    component={SavedListingsScreen}
-                    options={{ title: 'Saved Listings' }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
+            )}
+        </SafeAreaView>
     );
 };
 
-/**
- * SavedListingsScreen Component
- */
-export const SavedListingsScreen: React.FC = () => {
-    return (
-        <View style={styles.container}>
-            <Text>Saved Listings Screen</Text>
-        </View>
-    );
-};
-
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f5f5f5',
+    },
+    header: {
+        padding: 20,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    listContainer: {
+        padding: 16,
+    },
+    emptyContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 40,
+    },
+    emptyEmoji: {
+        fontSize: 64,
+        marginBottom: 16,
+    },
+    emptyText: {
+        fontSize: 18,
+        color: '#666',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    emptySubtext: {
+        fontSize: 14,
+        color: '#999',
+        textAlign: 'center',
     },
 });
-
-/**
- * 
- * 1. NavigationContainer: Wraps everything, manages navigation state
- * 2. Stack.Navigator: Defines stack of screens (like a deck of cards)
- * 3. Stack.Screen: Individual screens in the stack
- * 
- * Navigation happens via:
- * - navigation.navigate('ScreenName')
- * - navigation.goBack()
- * - navigation.push('ScreenName')
- * 
- * Each screen component automatically receives a 'navigation' prop
- */

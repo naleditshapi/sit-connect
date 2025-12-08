@@ -32,7 +32,7 @@ export const initDatabase = async (): Promise<void> => {
       );
     `);
 
-    console.log("✅ Listings table ready");
+    console.log("Listings table ready");
 
     // #region Saved Listings
     // This stores which listings a sitter has bookmarked
@@ -46,7 +46,7 @@ export const initDatabase = async (): Promise<void> => {
       );
     `);
 
-    console.log("✅ Saved listings table ready");
+    console.log("Saved listings table ready");
 
     // Check if we need to seed data
     const result = await database.getFirstAsync<{ count: number }>(
@@ -64,6 +64,7 @@ export const initDatabase = async (): Promise<void> => {
     throw error;
   }
 };
+// #endregion Create listings table
 
 //#region Seed Data
 const seedSampleData = async (
@@ -121,9 +122,9 @@ const seedSampleData = async (
       createdAt: new Date().toISOString(),
     },
   ];
+  // #endregion Sample Listings
 
-  // Insert each sample listing using parameterized queries
-  // This prevents SQL injection attacks
+  // #region Insert each sample listing
   for (const listing of sampleListings) {
     await database.runAsync(
       `INSERT INTO listings (creatorRoleId, sitterType, location, startDate, endDate, description, createdAt)
@@ -139,12 +140,14 @@ const seedSampleData = async (
       ]
     );
   }
-  console.log("✅ Seeded 5 sample listings");
+  console.log("Seeded 5 sample listings");
 };
+//#endregion Seed Data
 
-//Get database instance for queries - Export this so other files can access the database
+// #region Get database
 export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
   return await openDB();
 };
+// #endregion Get database
 
 export default { initDatabase, getDatabase };

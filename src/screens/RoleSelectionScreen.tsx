@@ -155,13 +155,3 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 });
-
-/**
- * Key React Native Components Used:
- * 
- * - SafeAreaView: Respects device notches/safe areas
- * - View: Container (like <div> in web)
- * - Text: Display text (all text must be in <Text>)
- * - TouchableOpacity: Pressable button with opacity feedback
- * - StyleSheet: Optimized styling system
- */

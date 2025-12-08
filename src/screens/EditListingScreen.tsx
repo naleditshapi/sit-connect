@@ -20,12 +20,7 @@ type EditListingScreenProps = {
     route: RouteProp<RootStackParamList, 'EditListing'>;
 };
 
-/**
- * Edit Listing Screen
- * 
- * Pre-fills form with existing listing data
- * Allows requester to update their listing
- */
+// #region Edit Listing Screen
 export const EditListingScreen: React.FC<EditListingScreenProps> = ({
     navigation,
     route,
@@ -43,16 +38,13 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    /**
-     * Load existing listing data when component mounts
-     */
+    // #region Load existing listing data when component mounts
     useEffect(() => {
         loadListing();
     }, [listingId]);
 
-    /**
-     * Fetch listing and populate form
-     */
+
+    // #region Fetch listing and populate form
     const loadListing = async () => {
         try {
             setLoading(true);
@@ -77,10 +69,10 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
             setLoading(false);
         }
     };
+    // #endregion Fetch listing and populate form
+    // #endregion Load existing listing data when component mounts
 
-    /**
-     * Validate form data
-     */
+    // #region Validate form data
     const validateForm = (): boolean => {
         if (!location.trim()) {
             Alert.alert('Error', 'Please enter a location');
@@ -96,10 +88,9 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
         }
         return true;
     };
+    // #endregion Validate form data
 
-    /**
-     * Handle form submission
-     */
+    // #region Handle form submission
     const handleSubmit = async () => {
         if (!validateForm()) {
             return;
@@ -129,8 +120,9 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
             setSaving(false);
         }
     };
+    // #endregion Handle form submission
 
-    // Loading state - show spinner while fetching data
+    // #region Loading state
     if (loading) {
         return (
             <SafeAreaView style={styles.container}>
@@ -141,8 +133,9 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
             </SafeAreaView>
         );
     }
+    // #endregion Loading state
 
-    // Main form
+    // #region Main form
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
@@ -164,7 +157,7 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
                                 sitterType === SitterType.PET && styles.typeButtonTextActive,
                             ]}
                         >
-                            🐾 Pet
+                            Pet
                         </Text>
                     </TouchableOpacity>
 
@@ -181,7 +174,7 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
                                 sitterType === SitterType.HOUSE && styles.typeButtonTextActive,
                             ]}
                         >
-                            🏠 House
+                            House
                         </Text>
                     </TouchableOpacity>
 
@@ -198,7 +191,7 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
                                 sitterType === SitterType.BOTH && styles.typeButtonTextActive,
                             ]}
                         >
-                            🏠🐾 Both
+                            Both
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -258,8 +251,10 @@ export const EditListingScreen: React.FC<EditListingScreenProps> = ({
             </ScrollView>
         </SafeAreaView>
     );
+    // #endregion Main form
 };
 
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -345,14 +340,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
+    //#endregion Styles
 });
-
-/**
- * Key Differences from Create Screen:
- * 
- * 1. Loads existing data first (useEffect + getListingById)
- * 2. Pre-fills form with existing values
- * 3. Calls updateListing instead of createListing
- * 4. Shows loading state while fetching data
- * 5. Uses different button text ("Save Changes" vs "Create Listing")
- */
+// #endregion Edit Listing Screen

@@ -14,34 +14,25 @@ import { ListingCard } from '../components/ListingCard';
 import { deleteListing, getListingsByCreator } from '../services/listingService';
 import { Listing, RootStackParamList } from '../types';
 
-/**
- * Mock user ID
- * In a real app, this would come from authentication
- */
 const MOCK_REQUESTER_ROLE_ID = 1;
 
 type MyListingsScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'MyListings'>;
 };
 
-/**
- * My Listings Screen
- * Shows all listings created by the current user (requester)
- */
+// #region My Listings
 export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }) => {
     // State to store listings
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
 
-    /**
-     * Load listings from database
-     */
+    // #region Load listings from database
     const loadListings = async () => {
         try {
             setLoading(true);
             const data = await getListingsByCreator(MOCK_REQUESTER_ROLE_ID);
             setListings(data);
-            console.log(`📋 Loaded ${data.length} listings`);
+            console.log(`Loaded ${data.length} listings`);
         } catch (error) {
             console.error('Error loading listings:', error);
             Alert.alert('Error', 'Failed to load listings');
@@ -50,26 +41,21 @@ export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }
         }
     };
 
-    /**
-     * useFocusEffect - runs when screen comes into focus
-     * 
-     * Different from useEffect:
-     * - useEffect: Runs when component mounts
-     * - useFocusEffect: Runs when screen becomes visible (even when navigating back)
-     * 
-     * Why we need this:
-     * If you create a listing and come back, we want to reload the list
-     */
     useFocusEffect(
         useCallback(() => {
-            console.log('🔄 Screen focused, loading listings...');
+            console.log('Screen focused, loading listings...');
             loadListings();
-        }, []) // Empty array = use same callback every time
+        }, [])
     );
+    // #endregion Load listings from database
 
-    /**
-     * Handle delete with confirmation
-     */
+    // #region Handle edit 
+    const handleEdit = (listingId: number) => {
+        console.log('📝 Editing listing:', listingId);
+        navigation.navigate('EditListing', { listingId });
+    };
+
+    // #region Handle delete 
     const handleDelete = (listingId: number) => {
         Alert.alert(
             'Delete Listing',
@@ -97,26 +83,27 @@ export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }
             ]
         );
     };
+    // #endregion Handle delete
 
-    /**
-     * Render each listing item
-     * Used by FlatList
-     */
+    // #region Render each listing item
     const renderItem = ({ item }: { item: Listing }) => (
         <ListingCard
             listing={item}
             onPress={() => {
+                // TODO: Navigate to details screen
                 console.log('Pressed listing:', item.id);
-                navigation.navigate('ListingDetails', { listingId: item.id });
+                Alert.alert('Details', 'Details screen coming soon!');
             }}
             showActions={true} // Show edit/delete buttons
             onEdit={() => {
+                // TODO: Navigate to edit screen
                 console.log('Edit listing:', item.id);
-                navigation.navigate('EditListing', { listingId: item.id });
+                Alert.alert('Edit', 'Edit screen coming soon!');
             }}
             onDelete={() => handleDelete(item.id)}
         />
     );
+    // #endregion Render each listing item
 
     return (
         <SafeAreaView style={styles.container}>
@@ -139,7 +126,6 @@ export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }
             ) : listings.length === 0 ? (
                 // Empty state - no listings yet
                 <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyEmoji}>📝</Text>
                     <Text style={styles.emptyText}>No listings yet</Text>
                     <TouchableOpacity
                         style={styles.emptyButton}
@@ -161,6 +147,7 @@ export const MyListingsScreen: React.FC<MyListingsScreenProps> = ({ navigation }
     );
 };
 
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -220,14 +207,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    // #endregion Styles
 });
-
-/**
- * Key Concepts:
- * 
- * 1. FlatList: Efficient list rendering (virtualized)
- * 2. useFocusEffect: Reload data when screen comes into focus
- * 3. Alert.alert: Native confirmation dialogs
- * 4. Conditional Rendering: loading ? <Loading /> : <List />
- * 5. Empty States: Better UX when no data
- */
+// #endregion My Listings

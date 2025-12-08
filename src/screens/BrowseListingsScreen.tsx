@@ -18,22 +18,14 @@ type BrowseListingsScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'BrowseListings'>;
 };
 
-/**
- * Browse Listings Screen
- * 
- * Sitters use this screen to:
- * - Browse all available listings
- * - Filter by type (pet/house/both/all)
- * - Navigate to details to save
- */
+// #region Browse Listings 
 export const BrowseListingsScreen: React.FC<BrowseListingsScreenProps> = ({ navigation }) => {
     const [listings, setListings] = useState<Listing[]>([]);
     const [selectedFilter, setSelectedFilter] = useState<SitterType | 'all'>('all');
     const [loading, setLoading] = useState(true);
 
-    /**
-     * Load listings based on current filter
-     */
+    // #region Load Listings 
+    // based on current filter
     const loadListings = async (filter: SitterType | 'all' = 'all') => {
         setLoading(true);
         try {
@@ -46,30 +38,27 @@ export const BrowseListingsScreen: React.FC<BrowseListingsScreenProps> = ({ navi
             setLoading(false);
         }
     };
+    // #endregion Load Listings
 
-    /**
-     * Reload listings when screen comes into focus
-     * or when filter changes
-     */
+    // #region Reload Listings 
+    // when screen comes into focus or when filter changes
     useFocusEffect(
         useCallback(() => {
             console.log('🔄 Screen focused, loading listings...');
             loadListings(selectedFilter);
         }, [selectedFilter]) // Re-run when selectedFilter changes
     );
+    // #endregion Reload Listings
 
-    /**
-     * Handle filter change
-     */
+    // #region Handle filter change
     const handleFilterChange = (filter: SitterType | 'all') => {
         console.log('🔍 Filter changed to:', filter);
         setSelectedFilter(filter);
         // loadListings will be called by useFocusEffect
     };
+    // #endregion Handle filter change
 
-    /**
-     * Render each listing item
-     */
+    // #region Render each listing item
     const renderItem = ({ item }: { item: Listing }) => (
         <ListingCard
             listing={item}
@@ -80,6 +69,7 @@ export const BrowseListingsScreen: React.FC<BrowseListingsScreenProps> = ({ navi
             showActions={false} // Sitters can't edit/delete
         />
     );
+    // #endregion Render each listing item
 
     return (
         <SafeAreaView style={styles.container}>
@@ -123,6 +113,7 @@ export const BrowseListingsScreen: React.FC<BrowseListingsScreenProps> = ({ navi
     );
 };
 
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -175,13 +166,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#999',
     },
+    // #endregion Styles
 });
-
-/**
- * Key Concepts:
- * 
- * 1. Filter State: selectedFilter controls what's displayed
- * 2. Effect Dependencies: [selectedFilter] makes effect re-run on filter change
- * 3. Component Composition: FilterBar + ListingCard work together
- * 4. Navigation with Params: Pass listingId to details screen
- */
+// #endregion Browse Listings

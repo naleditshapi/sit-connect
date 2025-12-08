@@ -281,13 +281,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-/**
- * Key Concepts:
- * 
- * 1. Controlled Components: Input value controlled by state
- * 2. Form Validation: Check data before submitting
- * 3. Loading States: Disable button while submitting
- * 4. ScrollView: For forms that might be longer than screen
- * 5. TextInput Props: placeholder, multiline, keyboardType, etc.
- */
