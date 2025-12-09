@@ -11,19 +11,15 @@ import Animated, {
 
 const { width, height } = Dimensions.get('window');
 
+// #region Types
 interface FloatingIconProps {
     icon: string;
     delay?: number;
     duration?: number;
 }
+// #endregion Types
 
-/**
- * Floating Icon Component
- * 
- * Creates a floating, drifting icon in the background
- * Uses low opacity to not distract from main content
- * Animates position in a smooth loop
- */
+// #region Floating Icon Comp
 export const FloatingIcon: React.FC<FloatingIconProps> = ({
     icon,
     delay = 0,
@@ -38,6 +34,7 @@ export const FloatingIcon: React.FC<FloatingIconProps> = ({
     const translateY = useSharedValue(startY);
     const opacity = useSharedValue(0);
 
+    // #region Animation Effect
     useEffect(() => {
         // Fade in
         opacity.value = withDelay(
@@ -74,7 +71,9 @@ export const FloatingIcon: React.FC<FloatingIconProps> = ({
             )
         );
     }, []);
+    // #endregion Animation Effect
 
+    // #region Animated Style   
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value,
         transform: [
@@ -88,12 +87,16 @@ export const FloatingIcon: React.FC<FloatingIconProps> = ({
             {icon}
         </Animated.Text>
     );
+    // #endregion Animated Style
 };
+// #endregion Floating Icon Comp
 
+// #region Styles
 const styles = StyleSheet.create({
     icon: {
         position: 'absolute',
         fontSize: 40,
-        zIndex: -1, // Behind other content
+        zIndex: -1,
     },
+    // #endregion Styles
 });

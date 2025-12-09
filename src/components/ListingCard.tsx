@@ -8,10 +8,11 @@ import CollapsibleText from './CollapsibleText';
 interface ListingCardProps {
     listing: Listing;
     onPress: () => void;
-    showActions?: boolean;  // ? means optional
+    showActions?: boolean;
     onEdit?: () => void;
     onDelete?: () => void;
 }
+// #endregion Props for ListingCard
 
 // #region Listing Card Comp
 export const ListingCard: React.FC<ListingCardProps> = ({
@@ -21,7 +22,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     onEdit,
     onDelete,
 }) => {
-    //  Get color based on sitter type - Visual cue to quickly identify listing type
+    //  #region Get color - sitter type 
     const getSitterTypeColor = (type: SitterType): string => {
         switch (type) {
             case SitterType.PET:
@@ -34,8 +35,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 return '#757575'; // Gray fallback
         }
     };
+    // #endregion Get color - sitter type
 
-    //Get display label for sitter type
+    // #region Display label = sitter type
     const getSitterTypeLabel = (type: SitterType): string => {
         switch (type) {
             case SitterType.PET:
@@ -48,6 +50,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                 return type;
         }
     };
+    // #endregion Display label = sitter type
 
     // #region Format Date 
     // Converts "2025-01-15" to "15 Jan 2025"
@@ -59,7 +62,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             year: 'numeric',
         });
     };
+    // #endregion Format Date
 
+    // #region Render
     return (
         <TouchableOpacity
             style={styles.card}
@@ -102,7 +107,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
                         style={styles.editButton}
                         onPress={(e) => {
                             e.stopPropagation(); // Prevent card press when clicking button
-                            onEdit?.(); // Call onEdit if it exists (? is optional chaining)
+                            onEdit?.();
                         }}
                     >
                         <Text style={styles.editButtonText}>Edit</Text>
@@ -120,7 +125,9 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             )}
         </TouchableOpacity>
     );
+    // #endregion Render
 };
+// #endregion Listing Card Comp
 
 // #region Styles
 const styles = StyleSheet.create({

@@ -55,7 +55,7 @@ Before running this app, make sure you have:
 ## Installation
 
 1. Clone the repository:
-   git clone <repository-url>
+   git clone https://github.com/naleditshapi/sit-connect.git
    cd SitConnect
 
 2. Install dependencies:
@@ -72,20 +72,6 @@ Using Expo Go:
 2. Open Expo Go app on your device
 3. Scan the QR code from the terminal or Metro Bundler in your browser
 4. App will load on your device
-
-## Development Notes
-
-Mock Authentication
-Uses hardcoded role IDs (1 for requester, 2 for sitter)
-In production, replace with real authentication system
-
-Date Handling
-Uses simple text input (YYYY-MM-DD format)
-For production, implement proper date picker component
-
-Web Support
-App is designed for iOS/Android only
-Web shows "not supported" message (SQLite limitation)
 
 ## Acknowledgments
 

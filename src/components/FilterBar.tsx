@@ -1,98 +1,124 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SitterType } from '../types';
+import React from "react";
+import {
+    Animated,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { SitterType } from "../types";
 
-// Props for FilterBar
+// #region Types
 interface FilterBarProps {
-    selectedFilter: SitterType | 'all';
-    onFilterChange: (filter: SitterType | 'all') => void;
+    selectedFilter: SitterType | "all";
+    onFilterChange: (filter: SitterType | "all") => void;
 }
+// #endregion Types
 
-// #region FilterBar Comp
-// Horizontal scrollable filter buttons - Used in Browse Listings screen
+// #region Component
 export const FilterBar: React.FC<FilterBarProps> = ({
     selectedFilter,
     onFilterChange,
 }) => {
-    // #region Filter Options
-    const filters: Array<{ value: SitterType | 'all'; label: string }> = [
-        { value: 'all', label: 'All' },
-        { value: SitterType.PET, label: 'Pet Sitting' },
-        { value: SitterType.HOUSE, label: 'House Sitting' },
-        { value: SitterType.BOTH, label: 'Both' },
-    ];
 
+    // #region Filters Defined
+    const filters: Array<{ value: SitterType | "all"; label: string }> = [
+        { value: "all", label: "All" },
+        { value: SitterType.PET, label: "Pet Sitting" },
+        { value: SitterType.HOUSE, label: "House Sitting" },
+        { value: SitterType.BOTH, label: "Both" },
+    ];
+    // #endregion Filters Defined
+
+    // #region Render
     return (
         <View style={styles.container}>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                {filters.map((filter) => {
-                    const isSelected = selectedFilter === filter.value;
+            <View style={styles.row}>
+                {filters.map((f) => {
+                    const isActive = selectedFilter === f.value;
+
+                    const scale = new Animated.Value(isActive ? 1 : 0.95);
+                    const backgroundColor = isActive ? "#2196F3" : "#fff";
+
+                    const animatePressIn = () => {
+                        Animated.spring(scale, {
+                            toValue: 0.93,
+                            useNativeDriver: true,
+                        }).start();
+                    };
+
+                    const animatePressOut = () => {
+                        Animated.spring(scale, {
+                            toValue: 1,
+                            friction: 5,
+                            useNativeDriver: true,
+                        }).start();
+                    };
 
                     return (
-                        <TouchableOpacity
-                            key={filter.value}
-                            style={[
-                                styles.filterButton,
-                                isSelected && styles.filterButtonActive,
+                        <Pressable
+                            key={f.value}
+                            onPressIn={animatePressIn}
+                            onPressOut={animatePressOut}
+                            onPress={() => onFilterChange(f.value)}
+                            style={({ pressed }) => [
+                                styles.chip,
+                                {
+                                    backgroundColor: pressed
+                                        ? "#e0f0ff"
+                                        : backgroundColor,
+                                    borderColor: isActive
+                                        ? "#2196F3"
+                                        : "#ccc",
+                                },
                             ]}
-                            onPress={() => onFilterChange(filter.value)}
                         >
-                            <Text
-                                style={[
-                                    styles.filterText,
-                                    isSelected && styles.filterTextActive,
-                                ]}
-                            >
-                                {filter.label}
-                            </Text>
-                        </TouchableOpacity>
+                            <Animated.View style={{ transform: [{ scale }] }}>
+                                <Text
+                                    style={[
+                                        styles.chipText,
+                                        isActive && styles.chipTextActive,
+                                    ]}
+                                >
+                                    {f.label}
+                                </Text>
+                            </Animated.View>
+                        </Pressable>
                     );
                 })}
-            </ScrollView>
+            </View>
         </View>
     );
+    // #endregion Render
 };
 
 // #region Styles
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#f5f5f5',
+        backgroundColor: "#f8f8f8",
+        paddingVertical: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: "#eee",
     },
-    scrollContent: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        gap: 8,
+    row: {
+        flexDirection: "row",
+        paddingHorizontal: 12,
+        gap: 10,
     },
-    filterButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    chip: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
-        backgroundColor: '#fff',
+        borderRadius: 22,
         borderWidth: 1,
-        borderColor: '#ddd',
-        gap: 6,
     },
-    filterButtonActive: {
-        backgroundColor: '#2196F3',
-        borderColor: '#2196F3',
-    },
-    filterText: {
+    chipText: {
         fontSize: 14,
-        color: '#666',
-        fontWeight: '500',
+        color: "#444",
+        fontWeight: "500",
     },
-    filterTextActive: {
-        color: '#fff',
-        fontWeight: '600',
+    chipTextActive: {
+        color: "#fff",
+        fontWeight: "600",
     },
     // #endregion Styles
 });
-// #endregion FilterBar Comp

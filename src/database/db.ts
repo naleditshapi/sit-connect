@@ -3,7 +3,9 @@ import { SitterType } from "../types";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
-//Open database connection - Uses singleton pattern - only one instance
+// ===========================================================
+// #region OPEN DB
+// ===========================================================
 const openDB = async (): Promise<SQLite.SQLiteDatabase> => {
   if (!db) {
     db = await SQLite.openDatabaseAsync("sitconnect.db");
@@ -11,14 +13,40 @@ const openDB = async (): Promise<SQLite.SQLiteDatabase> => {
   }
   return db;
 };
+// #endregion OPEN DB
 
-// Initialize database tables and seed sample data - Called once when app starts
+// ===========================================================
+// #region INIT DATABASE
+// Creates ALL tables
+// ===========================================================
 export const initDatabase = async (): Promise<void> => {
   try {
     const database = await openDB();
 
-    // #region Create listings table
-    // This stores all sitting job postings
+    console.log("Initializing database...");
+
+    // ============================
+    // #region USERS TABLE
+    // ============================
+    await database.execAsync(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        firstName TEXT NOT NULL,
+        lastName TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT NOT NULL CHECK (role IN ('requester','sitter')),
+        profileImage TEXT,
+        createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log("Users table ready");
+    // #endregion USERS TABLE
+
+    // ============================
+    // #region LISTINGS TABLE
+    // ============================
     await database.execAsync(`
       CREATE TABLE IF NOT EXISTS listings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,45 +56,55 @@ export const initDatabase = async (): Promise<void> => {
         startDate TEXT NOT NULL,
         endDate TEXT NOT NULL,
         description TEXT NOT NULL,
-        createdAt TEXT NOT NULL
+        createdAt TEXT NOT NULL,
+        FOREIGN KEY (creatorRoleId) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
     console.log("Listings table ready");
+    // #endregion LISTINGS TABLE
 
-    // #region Saved Listings
-    // This stores which listings a sitter has bookmarked
+    // ============================
+    // #region SAVED LISTINGS TABLE
+    // ============================
     await database.execAsync(`
       CREATE TABLE IF NOT EXISTS saved_listings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         listingId INTEGER NOT NULL,
         sitterRoleId INTEGER NOT NULL,
         savedAt TEXT NOT NULL,
-        FOREIGN KEY (listingId) REFERENCES listings(id) ON DELETE CASCADE
+        FOREIGN KEY (listingId) REFERENCES listings(id) ON DELETE CASCADE,
+        FOREIGN KEY (sitterRoleId) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
     console.log("Saved listings table ready");
+    // #endregion SAVED LISTINGS TABLE
 
-    // Check if we need to seed data
+    // ============================
+    // #region SEED LISTINGS
+    // ============================
     const result = await database.getFirstAsync<{ count: number }>(
       "SELECT COUNT(*) as count FROM listings"
     );
 
-    // Only seed if database is empty
     if (result && result.count === 0) {
       await seedSampleData(database);
     } else {
-      console.log("Database already has data");
+      console.log("Database already contains listings.");
     }
+
+    console.log("Database initialization complete.");
   } catch (error) {
     console.error("Database initialization error:", error);
     throw error;
   }
+  // #endregion INIT DATABASE
 };
-// #endregion Create listings table
 
-//#region Seed Data
+// ===========================================================
+// #region SEED SAMPLE LISTINGS
+// ===========================================================
 const seedSampleData = async (
   database: SQLite.SQLiteDatabase
 ): Promise<void> => {
@@ -122,9 +160,7 @@ const seedSampleData = async (
       createdAt: new Date().toISOString(),
     },
   ];
-  // #endregion Sample Listings
 
-  // #region Insert each sample listing
   for (const listing of sampleListings) {
     await database.runAsync(
       `INSERT INTO listings (creatorRoleId, sitterType, location, startDate, endDate, description, createdAt)
@@ -140,14 +176,17 @@ const seedSampleData = async (
       ]
     );
   }
+
   console.log("Seeded 5 sample listings");
 };
-//#endregion Seed Data
+// #endregion SEED SAMPLE LISTINGS
 
-// #region Get database
+// ===========================================================
+// #region GET DATABASE
+// ===========================================================
 export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
   return await openDB();
 };
-// #endregion Get database
 
 export default { initDatabase, getDatabase };
+// #endregion GET DATABASE

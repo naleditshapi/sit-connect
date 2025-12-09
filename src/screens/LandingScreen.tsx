@@ -2,6 +2,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
     Dimensions,
+    Image,
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
@@ -9,7 +10,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 import Animated, {
     useAnimatedStyle,
@@ -25,26 +26,27 @@ import { RootStackParamList } from '../types';
 
 const { height } = Dimensions.get('window');
 
+// #region Type
 type LandingScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Landing'>;
 };
+// #endregion Type
 
+// #region Landing Screen Comp
 export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
     const [learnMoreOpen, setLearnMoreOpen] = useState(false);
 
     // Animation values
     const logoOpacity = useSharedValue(0);
     const logoScale = useSharedValue(0.5);
-    const buttonsTranslateY = useSharedValue(100);
+    const buttonsTranslateY = useSharedValue(10);
     const learnMoreHeight = useSharedValue(0);
     const learnMoreOpacity = useSharedValue(0);
 
-    /**
-     * Initialize animations on mount
-     */
+    // #region Initialize animations
     useEffect(() => {
         // Logo fade-in + scale bounce (500ms delay)
-        logoOpacity.value = withDelay(500, withTiming(1, { duration: 800 }));
+        logoOpacity.value = withDelay(50, withTiming(1, { duration: 80 }));
         logoScale.value = withDelay(
             500,
             withSequence(
@@ -55,17 +57,17 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
 
         // Buttons slide up (1500ms delay)
         buttonsTranslateY.value = withDelay(
-            1500,
+            150,
             withSpring(0, {
                 damping: 15,
                 stiffness: 100,
             })
         );
     }, []);
+    // #endregion Initialize animations
 
-    /**
-     * Toggle Learn More section
-     */
+    // #region Learn More Toggle
+
     const toggleLearnMore = () => {
         setLearnMoreOpen(!learnMoreOpen);
 
@@ -95,12 +97,15 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
         height: learnMoreHeight.value,
         opacity: learnMoreOpacity.value,
     }));
+    // #endregion Learn More Toggle
 
+    // #region Render
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 20} >
-            <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.keyboardView}
+            >
                 {/* Floating Background Icons */}
                 <FloatingIcon icon="🐾" delay={0} duration={4000} />
                 <FloatingIcon icon="🏠" delay={1000} duration={5000} />
@@ -115,7 +120,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
                 >
                     {/* Logo Section with Animation */}
                     <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
-                        <Text style={styles.logoEmoji}>🏠🐾</Text>
+                        <Image style={styles.logoEmoji} source={require('../../assets/images/icon.png')} />
                         <Text style={styles.logoText}>SitConnect</Text>
                         <Text style={styles.tagline}>Where Care Meets Connection</Text>
                     </Animated.View>
@@ -138,7 +143,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
                     <Animated.View style={[styles.buttonsContainer, buttonsAnimatedStyle]}>
                         <TouchableOpacity
                             style={[styles.button, styles.primaryButton]}
-                            onPress={() => navigation.navigate('RoleSelection')}
+                            onPress={() => navigation.navigate('SignUp')}
                             activeOpacity={0.8}
                         >
                             <Text style={styles.primaryButtonText}>Get Started</Text>
@@ -146,7 +151,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
 
                         <TouchableOpacity
                             style={[styles.button, styles.secondaryButton]}
-                            onPress={() => navigation.navigate('RoleSelection')}
+                            onPress={() => navigation.navigate('Login')}
                             activeOpacity={0.8}
                         >
                             <Text style={styles.secondaryButtonText}>Sign In</Text>
@@ -205,15 +210,21 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
                         </View>
                     </Animated.View>
                 </ScrollView>
-            </SafeAreaView>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
+    // #endregion Render
 };
+// #endregion Landing Screen Comp
 
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f9fa',
+    },
+    keyboardView: {
+        flex: 1,
     },
     scrollContent: {
         flexGrow: 1,
@@ -226,7 +237,8 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     logoEmoji: {
-        fontSize: 100,
+        width: 200,
+        height: 200,
         marginBottom: 16,
     },
     logoText: {
@@ -333,4 +345,4 @@ const styles = StyleSheet.create({
         lineHeight: 22,
     },
 });
-
+// #endregion Styles

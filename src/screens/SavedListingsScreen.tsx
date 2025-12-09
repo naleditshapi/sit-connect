@@ -14,11 +14,13 @@ import { Listing, RootStackParamList } from '../types';
 
 const MOCK_SITTER_ROLE_ID = 2;
 
+// #region Type
 type SavedListingsScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'SavedListings'>;
 };
+// #endregion Type
 
-//Shows all listings that the sitter has bookmarked
+// #region Saved Listings Comp
 export const SavedListingsScreen: React.FC<SavedListingsScreenProps> = ({ navigation }) => {
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ export const SavedListingsScreen: React.FC<SavedListingsScreenProps> = ({ naviga
         }
     };
 
-    // Reload when screen comes into focus
+    // #region Screen Reload 
     useFocusEffect(
         useCallback(() => {
             console.log('🔄 Saved listings screen focused');
@@ -56,7 +58,9 @@ export const SavedListingsScreen: React.FC<SavedListingsScreenProps> = ({ naviga
             showActions={false}
         />
     );
+    // #endregion Render Saved Listing
 
+    // #region Render
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
@@ -87,7 +91,9 @@ export const SavedListingsScreen: React.FC<SavedListingsScreenProps> = ({ naviga
             )}
         </SafeAreaView>
     );
+    // #endregion Render
 };
+// #endregion Saved Listings Comp
 
 // #region Styles
 const styles = StyleSheet.create({

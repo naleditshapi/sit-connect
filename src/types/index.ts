@@ -1,54 +1,79 @@
-// Blueprints for data
-// They help TypeScript catch errors before runtime
-
-// #region Sitter Type Interface
+// #region Sitter Type Enums
 export enum SitterType {
-  PET = "pet", // Just pets
-  HOUSE = "house", // Just house
-  BOTH = "both", // Both pets and house
+  PET = "pet",
+  HOUSE = "house",
+  BOTH = "both",
 }
+// #endregion Sitter Type Enums
 
-// #region User Role Interface
+// #region User Role Enums
 export enum UserRole {
-  REQUESTER = "requester", // "I need a sitter"
-  SITTER = "sitter", // "I am a sitter"
+  REQUESTER = "requester",
+  SITTER = "sitter",
 }
+// #endregion User Role Enums
 
-// #region Listing Interface
+// #region User Type
+export type User = {
+  name: string;
+  surname: string;
+  email: string;
+  username: string;
+  role: "requester" | "sitter";
+  profileImage?: string;
+};
+// #endregion User Type
+
+// #region Listing Type
 export interface Listing {
-  id: number; // Unique identifier
-  creatorRoleId: number; // Who created this? (mock: 1)
-  sitterType: SitterType; // What service needed?
-  location: string; // Where?
-  startDate: string; // ISO format: "2025-01-15"
+  id: number;
+  creatorRoleId: number;
+  sitterType: SitterType;
+  location: string;
+  startDate: string;
   endDate: string;
-  description: string; // Details about the job
-  createdAt: string; // When was this posted?
+  description: string;
+  pricePerDay: number;
+  createdAt: string;
 }
+// #endregion Listing Type
 
-// #region Nav Screen Data
+// #region Root Stack Param List
 export type RootStackParamList = {
-  RoleSelection: undefined;
-  RequesterHome: undefined;
-  CreateListing: undefined;
-  MyListings: undefined;
-  EditListing: { listingId: number };
-  BrowseListings: undefined;
-  ListingDetails: { listingId: number };
-  SavedListings: undefined;
-  SitterHome: undefined;
   Landing: undefined;
   Login: undefined;
   SignUp: undefined;
-};
 
-export interface User {
-  id: number;
-  name: string;
-  surname: string;
-  role: "requester" | "sitter";
-  email: string;
-  username: string;
-  password: string;
-  profileImage?: string | null;
-}
+  // Tab Navigators
+  RequesterTabs: undefined;
+  SitterTabs: undefined;
+
+  // Requester Screens
+  RequesterHomeNew: undefined;
+  RequesterProfile: undefined;
+  CreateListing: undefined;
+  MyListings: undefined;
+  EditListing: { listingId: number };
+
+  // Sitter Screens
+  SitterHomeNew: undefined;
+  BrowseListings: undefined;
+  SavedListings: undefined;
+  SitterProfile: undefined;
+
+  // Profile Screens
+  EditProfile: { listingsId: number };
+  ChangePassword: undefined;
+  NotificationSettings: undefined;
+
+  // Browse
+  BrowseSitters: undefined;
+  ListingDetails: { listingId: number };
+
+  // Legacy (keep for now)
+  RequesterHome: undefined;
+  SitterHome: undefined;
+
+  AboutApp: undefined;
+};
+// #endregion Root Stack Param List

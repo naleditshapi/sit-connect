@@ -7,19 +7,16 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
+// #region Types
 interface TypewriterTextProps {
     text: string;
     delay?: number;
     speed?: number;
     style?: TextStyle;
 }
+// #endregion Types
 
-/**
- * Typewriter Text Component
- * 
- * Creates a typing animation effect
- * Text appears character by character with fade-in
- */
+// #region Typewriter Text Comp
 export const TypewriterText: React.FC<TypewriterTextProps> = ({
     text,
     delay = 0,
@@ -33,7 +30,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
         // Fade in the text container
         opacity.value = withDelay(delay, withTiming(1, { duration: 500 }));
 
-        // Typing effect
+        // #region Typing effect
         let currentIndex = 0;
         const typingInterval = setInterval(() => {
             if (currentIndex <= text.length) {
@@ -43,15 +40,20 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
                 clearInterval(typingInterval);
             }
         }, speed);
+        // #endregion Typing effect
 
-        // Cleanup
+        // #region Cleanup
         return () => clearInterval(typingInterval);
+        // #endregion Cleanup
     }, [text, delay, speed]);
 
+    // #region Animated Style
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value,
     }));
+    // #endregion Animated Style
 
+    // #region Render
     return (
         <Animated.Text style={[style, animatedStyle]}>
             {displayedText}
@@ -60,5 +62,6 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
             )}
         </Animated.Text>
     );
+    // #endregion Render
 };
-
+// #endregion Typewriter Text Comp

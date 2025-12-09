@@ -21,17 +21,14 @@ import { Listing, RootStackParamList, SitterType } from '../types';
 
 const MOCK_SITTER_ROLE_ID = 2;
 
+// #region Type
 type ListingDetailsScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'ListingDetails'>;
     route: RouteProp<RootStackParamList, 'ListingDetails'>;
 };
+// #endregion Type
 
-/**
- * Listing Details Screen
- * 
- * Shows full details of a listing
- * Allows sitters to save/unsave the listing
- */
+// #region Listing Details Comp
 export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ route }) => {
     const { listingId } = route.params; // Get listingId from navigation params
 
@@ -40,16 +37,11 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
     const [loading, setLoading] = useState(true);
     const [savingInProgress, setSavingInProgress] = useState(false);
 
-    /**
-     * Load listing details when component mounts
-     */
+    // #region Load listing details
     useEffect(() => {
         loadListing();
     }, [listingId]); // Re-run if listingId changes
 
-    /**
-     * Load listing data and saved status
-     */
     const loadListing = async () => {
         try {
             setLoading(true);
@@ -70,10 +62,9 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
             setLoading(false);
         }
     };
+    // #endregion Load listing details
 
-    /**
-     * Toggle save/unsave
-     */
+    // #region Handle Save/Unsave
     const handleToggleSave = async () => {
         setSavingInProgress(true);
         try {
@@ -95,10 +86,9 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
             setSavingInProgress(false);
         }
     };
+    // #endregion Handle Save/Unsave
 
-    /**
-     * Helper: Get color for sitter type badge
-     */
+    // #region Sitter Type Color
     const getSitterTypeColor = (type: SitterType): string => {
         switch (type) {
             case SitterType.PET:
@@ -111,10 +101,9 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
                 return '#757575';
         }
     };
+    // #endregion Sitter Type Color
 
-    /**
-     * Helper: Get label for sitter type
-     */
+    // #region Sitter Type Label
     const getSitterTypeLabel = (type: SitterType): string => {
         switch (type) {
             case SitterType.PET:
@@ -127,10 +116,9 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
                 return type;
         }
     };
+    // #endregion Sitter Type Label
 
-    /**
-     * Helper: Format date for display
-     */
+    // #region Format date
     const formatDate = (dateStr: string): string => {
         const date = new Date(dateStr);
         return date.toLocaleDateString('en-GB', {
@@ -140,7 +128,7 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
         });
     };
 
-    // Loading state
+    // #region Loading state
     if (loading) {
         return (
             <SafeAreaView style={styles.container}>
@@ -151,8 +139,9 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
             </SafeAreaView>
         );
     }
+    // #endregion Loading state
 
-    // Error state - listing not found
+    // #region Error state 
     if (!listing) {
         return (
             <SafeAreaView style={styles.container}>
@@ -162,8 +151,9 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
             </SafeAreaView>
         );
     }
+    // #endregion Error state
 
-    // Main content
+    // #region Render
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
@@ -225,8 +215,11 @@ export const ListingDetailsScreen: React.FC<ListingDetailsScreenProps> = ({ rout
             </ScrollView>
         </SafeAreaView>
     );
+    // #endregion Render
 };
+// #endregion Listing Details Comp
 
+// #region Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -305,3 +298,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+// #endregion Styles

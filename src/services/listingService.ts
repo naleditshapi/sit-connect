@@ -7,7 +7,7 @@ import { Listing, SitterType } from "../types";
 
 //Create a new listing - @returns The ID of the newly created listing
 export const createListing = async (
-  creatorUserId: number,
+  creatorRoleId: number,
   sitterType: SitterType,
   location: string,
   startDate: string,
@@ -22,7 +22,7 @@ export const createListing = async (
       `INSERT INTO listings (creatorRoleId, sitterType, location, startDate, endDate, description, createdAt)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
-        creatorUserId,
+        creatorRoleId,
         sitterType,
         location,
         startDate,
@@ -70,16 +70,13 @@ export const getListingsByCreator = async (
     const db = await getDatabase();
 
     const listings = await db.getAllAsync<Listing>(
-      "SELECT * FROM listings WHERE creatorUserId = ? ORDER BY createdAt DESC",
+      "SELECT * FROM listings WHERE creatorRoleId = ? ORDER BY createdAt DESC",
       [creatorUserId]
     );
 
-    console.log(
-      `Fetched ${listings.length} listings for creator ${creatorUserId}`
-    );
     return listings;
   } catch (error) {
-    console.error("Error fetching listings by creator:", error);
+    console.error("❌ Error fetching listings by creator:", error);
     throw error;
   }
 };
@@ -110,22 +107,22 @@ export const filterListingsByType = async (
     const db = await getDatabase();
 
     if (sitterType === "all") {
-      // Return all listings
       return await getAllListings();
     }
 
-    // If filtering by 'pet' or 'house', also include listings marked as 'both'
-    // Example: Searching for 'pet' should show 'pet' AND 'both' listings
+    if (sitterType === SitterType.BOTH) {
+      return await db.getAllAsync<Listing>(`
+        SELECT * FROM listings WHERE sitterType = "both"
+        ORDER BY createdAt DESC
+      `);
+    }
+
+    // ONLY return exact type — no both
     const listings = await db.getAllAsync<Listing>(
-      `SELECT * FROM listings 
-       WHERE sitterType = ? OR sitterType = ?
-       ORDER BY createdAt DESC`,
-      [sitterType, SitterType.BOTH]
+      `SELECT * FROM listings WHERE sitterType = ? ORDER BY createdAt DESC`,
+      [sitterType]
     );
 
-    console.log(
-      `Filtered to ${listings.length} listings for type: ${sitterType}`
-    );
     return listings;
   } catch (error) {
     console.error("Error filtering listings:", error);
